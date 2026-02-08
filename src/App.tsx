@@ -1,11 +1,15 @@
 import { useGameStore } from './store/gameStore';
-import { SetupScreen } from './components/SetupScreen';
+import { LobbyScreen } from './components/LobbyScreen';
 import { InputScreen } from './components/InputScreen';
 import { BattleScreen } from './components/BattleScreen';
 import { GameOverScreen } from './components/GameOverScreen';
 
 function App() {
   const phase = useGameStore((state) => state.phase);
+  const roomId = useGameStore((state) => state.roomId);
+
+  // If not in a room, show lobby (which handles create/join)
+  const showLobby = !roomId || phase === 'LOBBY';
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-900 text-white font-sans selection:bg-indigo-500/30">
@@ -18,10 +22,10 @@ function App() {
 
       {/* Content */}
       <div className="relative z-10 min-h-screen">
-        {phase === 'SETUP' && <SetupScreen />}
-        {phase === 'INPUT' && <InputScreen />}
-        {phase === 'BATTLE' && <BattleScreen />}
-        {phase === 'GAMEOVER' && <GameOverScreen />}
+        {showLobby && <LobbyScreen />}
+        {roomId && phase === 'INPUT' && <InputScreen />}
+        {roomId && phase === 'BATTLE' && <BattleScreen />}
+        {roomId && phase === 'GAMEOVER' && <GameOverScreen />}
       </div>
     </div>
   );

@@ -1,59 +1,96 @@
 import { useGameStore } from '../store/gameStore';
 
 export const GameOverScreen = () => {
-    const { players, winnerId, restartGame } = useGameStore();
+    const { players, winnerId, restartGame, isHost, myPlayerId } = useGameStore();
     const winner = players.find(p => p.id === winnerId);
+    const isWinner = winnerId === myPlayerId;
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10 overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            </div>
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
+            <div className="glass p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-2xl text-center backdrop-blur-xl border border-white/10 space-y-8">
 
-            <h1 className="text-7xl md:text-9xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 mb-12 drop-shadow-lg animate-bounce duration-[2000ms]">
-                優勝！
-            </h1>
-
-            <div className="glass p-12 rounded-3xl shadow-2xl text-center mb-16 backdrop-blur-xl border border-yellow-500/30 relative overflow-hidden group animate-float">
-                <div className="absolute inset-0 bg-gradient-to-t from-yellow-500/20 to-transparent opacity-50"></div>
-                <p className="text-xl text-yellow-200 mb-2 uppercase tracking-[0.2em] font-bold relative z-10">WINNER</p>
-                <div className="text-5xl md:text-7xl font-heading font-bold text-white relative z-10 drop-shadow-md">
-                    {winner?.name || '不明'}
+                {/* Trophy Animation Container */}
+                <div className="relative">
+                    <div className="text-8xl md:text-9xl animate-bounce">
+                        {isWinner ? '👑' : '🏆'}
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-radial from-yellow-500/20 to-transparent rounded-full blur-3xl -z-10 animate-pulse"></div>
                 </div>
-            </div>
 
-            <div className="w-full max-w-lg relative z-10">
-                <div className="glass p-6 rounded-2xl space-y-4">
-                    <h3 className="text-xl text-slate-300 font-bold mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
-                        <span>🏆</span> 最終結果
-                    </h3>
-                    {players.map((p, i) => (
-                        <div key={p.id} className="flex justify-between items-center bg-slate-900/40 p-4 rounded-xl border border-white/5 backdrop-blur-sm">
-                            <div className="flex items-center gap-3">
-                                <span className={`font-bold font-heading ${p.id === winnerId ? 'text-yellow-400' : 'text-slate-400'}`}>
-                                    {i + 1}. {p.name}
-                                </span>
-                                {p.id === winnerId && <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded border border-yellow-500/30">KING</span>}
-                            </div>
-                            <div className="flex gap-1">
-                                {p.displayWord.map((char, index) => (
-                                    <span key={index} className="w-8 h-8 flex items-center justify-center bg-slate-800 rounded-lg text-slate-200 font-bold border border-slate-700 shadow-sm">
-                                        {char}
+                {/* Result Message */}
+                <div className="space-y-4">
+                    {isWinner ? (
+                        <>
+                            <h1 className="text-4xl md:text-6xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 animate-pulse">
+                                YOU WIN!
+                            </h1>
+                            <p className="text-xl text-slate-300">おめでとうございます！</p>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="text-4xl md:text-6xl font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300">
+                                GAME OVER
+                            </h1>
+                            <p className="text-2xl text-slate-300">
+                                勝者: <span className="text-yellow-400 font-bold">{winner?.name}</span>
+                            </p>
+                        </>
+                    )}
+                </div>
+
+                {/* All Players Words Reveal */}
+                <div className="space-y-4 pt-4">
+                    <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-widest">みんなの単語</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {players.map((player) => (
+                            <div
+                                key={player.id}
+                                className={`p-4 rounded-2xl border transition-all ${player.id === winnerId
+                                        ? 'bg-yellow-500/10 border-yellow-500/30'
+                                        : player.id === myPlayerId
+                                            ? 'bg-indigo-500/10 border-indigo-500/30'
+                                            : 'bg-slate-900/30 border-white/5'
+                                    }`}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="font-bold text-white flex items-center gap-2">
+                                        {player.name}
+                                        {player.id === myPlayerId && <span className="text-xs bg-cyan-600 px-2 py-0.5 rounded-full">あなた</span>}
                                     </span>
-                                ))}
+                                    {player.id === winnerId && <span className="text-yellow-400">👑</span>}
+                                </div>
+                                <div className="flex gap-1 justify-center">
+                                    {player.displayWord.map((char, i) => (
+                                        <div
+                                            key={i}
+                                            className={`w-8 h-10 flex items-center justify-center rounded-lg text-lg font-bold ${char === '×'
+                                                    ? 'bg-slate-800/30 text-slate-600'
+                                                    : 'bg-indigo-200 text-indigo-900'
+                                                }`}
+                                        >
+                                            {char}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            <button
-                onClick={restartGame}
-                className="mt-12 px-12 py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-bold text-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] transform transition hover:-translate-y-1 active:scale-95 relative z-10 border-t border-white/20"
-            >
-                もう一度遊ぶ
-            </button>
+                {/* Restart */}
+                {isHost ? (
+                    <button
+                        onClick={restartGame}
+                        className="w-full py-5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white font-heading font-bold text-2xl rounded-2xl transition-all shadow-xl active:scale-95"
+                    >
+                        もう一度プレイ
+                    </button>
+                ) : (
+                    <div className="text-slate-400 py-4">
+                        ホストが次のゲームを開始するのを待っています...
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
