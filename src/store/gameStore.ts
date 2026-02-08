@@ -89,6 +89,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         const myPlayerId = get().myPlayerId;
 
         try {
+            // Clean up: delete any existing player records for this player
+            await supabase.from('players').delete().eq('id', myPlayerId);
+
             console.log('Creating room with host_id:', myPlayerId);
 
             const { data: roomData, error: roomError } = await supabase
@@ -156,6 +159,9 @@ export const useGameStore = create<GameState>((set, get) => ({
         const myPlayerId = get().myPlayerId;
 
         try {
+            // Clean up: delete any existing player records for this player
+            await supabase.from('players').delete().eq('id', myPlayerId);
+
             const { data: roomData, error: roomError } = await supabase
                 .from('rooms')
                 .select()
