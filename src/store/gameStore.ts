@@ -272,10 +272,31 @@ export const useGameStore = create<GameState>((set, get) => ({
         const { roomId, isHost, theme } = get();
         if (!supabase || !roomId || !isHost) return;
 
+        // Reset room state
         await supabase.from('rooms').update({
             phase: 'INPUT',
             theme: theme || 'なんでも',
+            current_player_index: 0,
+            attack_count: 0,
+            attacked_kanas: [],
         }).eq('id', roomId);
+
+        // Reset all players' game state
+        await supabase.from('players').update({
+            display_word: [],
+            revealed_indices: [false, false, false, false, false, false, false],
+            is_eliminated: false,
+            is_winner: false,
+        }).eq('room_id', roomId);
+
+        // Reset local state
+        set({
+            logs: [],
+            winnerId: null,
+            currentPlayerIndex: 0,
+            attackCount: 0,
+            attackedKanas: new Set(),
+        });
     },
 
     setMyWord: async (word: string) => {
