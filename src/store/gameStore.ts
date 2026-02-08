@@ -233,7 +233,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     },
 
     setMyWord: async (word: string) => {
-        const { roomId, myPlayerId } = get();
+        const { roomId, myPlayerId, players } = get();
         if (!supabase || !roomId) return;
 
         const normalized = normalizeKana(word);
@@ -242,10 +242,19 @@ export const useGameStore = create<GameState>((set, get) => ({
             displayWord.push('×');
         }
 
+        // Update in Supabase
         await supabase.from('players').update({
             display_word: displayWord,
             revealed_indices: new Array(7).fill(false),
         }).eq('id', myPlayerId).eq('room_id', roomId);
+
+        // Also update local state immediately
+        const updatedPlayers = players.map(p =>
+            p.id === myPlayerId
+                ? { ...p, displayWord, revealedIndices: new Array(7).fill(false) }
+                : p
+        );
+        set({ players: updatedPlayers });
     },
 
     attack: async (kana: string) => {
