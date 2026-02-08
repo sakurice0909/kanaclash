@@ -445,14 +445,43 @@ export const useGameStore = create<GameState>((set, get) => ({
             }
         };
 
-        fetchPlayers();
+        const fetchRoom = async () => {
+            if (!supabase) return;
+            const { data } = await supabase
+                .from('rooms')
+                .select()
+                .eq('id', roomId)
+                .single();
 
+            if (data) {
+                set({
+                    phase: data.phase as Phase,
+                    theme: data.theme,
+                    currentPlayerIndex: data.current_player_index,
+                    attackCount: data.attack_count,
+                    attackedKanas: new Set(data.attacked_kanas || []),
+                });
+            }
+        };
+
+        // Initial fetch
+        fetchPlayers();
+        fetchRoom();
+
+        // Polling as fallback (every 2 seconds)
+        const pollInterval = setInterval(() => {
+            fetchPlayers();
+            fetchRoom();
+        }, 2000);
+
+        // Also try Realtime subscription
         const channel = supabase
             .channel(`room:${roomId}`)
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` },
                 (payload) => {
+                    console.log('Room update received:', payload);
                     if (payload.eventType === 'UPDATE') {
                         const room = payload.new as DbRoom;
                         set({
@@ -468,13 +497,17 @@ export const useGameStore = create<GameState>((set, get) => ({
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'players', filter: `room_id=eq.${roomId}` },
-                () => {
+                (payload) => {
+                    console.log('Player update received:', payload);
                     fetchPlayers();
                 }
             )
-            .subscribe();
+            .subscribe((status) => {
+                console.log('Realtime subscription status:', status);
+            });
 
         return () => {
+            clearInterval(pollInterval);
             if (supabase) supabase.removeChannel(channel);
         };
     },
