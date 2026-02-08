@@ -81,7 +81,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     createRoom: async (hostName: string) => {
         if (!supabase) {
-            set({ error: 'Supabase not configured' });
+            set({ error: 'Supabase not configured - check environment variables' });
             return null;
         }
 
@@ -89,6 +89,8 @@ export const useGameStore = create<GameState>((set, get) => ({
         const myPlayerId = get().myPlayerId;
 
         try {
+            console.log('Creating room with host_id:', myPlayerId);
+
             const { data: roomData, error: roomError } = await supabase
                 .from('rooms')
                 .insert({
@@ -99,7 +101,12 @@ export const useGameStore = create<GameState>((set, get) => ({
                 .select()
                 .single();
 
-            if (roomError) throw roomError;
+            if (roomError) {
+                console.error('Room creation error:', roomError);
+                throw new Error(`Room error: ${roomError.message} (${roomError.code})`);
+            }
+
+            console.log('Room created:', roomData);
 
             const { error: playerError } = await supabase
                 .from('players')
@@ -110,7 +117,10 @@ export const useGameStore = create<GameState>((set, get) => ({
                     player_order: 0,
                 });
 
-            if (playerError) throw playerError;
+            if (playerError) {
+                console.error('Player creation error:', playerError);
+                throw new Error(`Player error: ${playerError.message} (${playerError.code})`);
+            }
 
             set({
                 roomId: roomData.id,
@@ -129,7 +139,9 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             return roomData.id;
         } catch (err) {
-            set({ error: err instanceof Error ? err.message : 'Failed to create room', loading: false });
+            const errorMessage = err instanceof Error ? err.message : 'Failed to create room';
+            console.error('Create room failed:', err);
+            set({ error: errorMessage, loading: false });
             return null;
         }
     },
