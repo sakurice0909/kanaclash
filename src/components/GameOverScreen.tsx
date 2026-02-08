@@ -1,9 +1,16 @@
+import { useEffect } from 'react';
 import { useGameStore } from '../store/gameStore';
 
 export const GameOverScreen = () => {
-    const { players, winnerId, restartGame, isHost, myPlayerId } = useGameStore();
+    const { players, winnerId, restartGame, isHost, myPlayerId, subscribeToRoom } = useGameStore();
     const winner = players.find(p => p.id === winnerId);
     const isWinner = winnerId === myPlayerId;
+
+    // Subscribe to room updates
+    useEffect(() => {
+        const unsubscribe = subscribeToRoom();
+        return unsubscribe;
+    }, [subscribeToRoom]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
@@ -46,10 +53,10 @@ export const GameOverScreen = () => {
                             <div
                                 key={player.id}
                                 className={`p-4 rounded-2xl border transition-all ${player.id === winnerId
-                                        ? 'bg-yellow-500/10 border-yellow-500/30'
-                                        : player.id === myPlayerId
-                                            ? 'bg-indigo-500/10 border-indigo-500/30'
-                                            : 'bg-slate-900/30 border-white/5'
+                                    ? 'bg-yellow-500/10 border-yellow-500/30'
+                                    : player.id === myPlayerId
+                                        ? 'bg-indigo-500/10 border-indigo-500/30'
+                                        : 'bg-slate-900/30 border-white/5'
                                     }`}
                             >
                                 <div className="flex items-center justify-between mb-2">
@@ -64,8 +71,8 @@ export const GameOverScreen = () => {
                                         <div
                                             key={i}
                                             className={`w-8 h-10 flex items-center justify-center rounded-lg text-lg font-bold ${char === '×'
-                                                    ? 'bg-slate-800/30 text-slate-600'
-                                                    : 'bg-indigo-200 text-indigo-900'
+                                                ? 'bg-slate-800/30 text-slate-600'
+                                                : 'bg-indigo-200 text-indigo-900'
                                                 }`}
                                         >
                                             {char}
