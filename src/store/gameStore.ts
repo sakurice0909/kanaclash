@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase, type DbRoom, type DbPlayer } from '../lib/supabase';
+import { supabase, type DbPlayer } from '../lib/supabase';
 import { normalizeKana } from '../utils/kana';
 
 export type Phase = 'LOBBY' | 'INPUT' | 'BATTLE' | 'GAMEOVER';
@@ -532,6 +532,13 @@ export const useGameStore = create<GameState>((set, get) => ({
 
                 // Check if all players have words (for auto-transition to BATTLE)
                 const { phase } = get();
+                // Update winnerId based on fetched players
+                const winner = players.find(p => p.isWinner);
+                // Only update winnerId if we are in GAMEOVER or if it changed (to void resetting it prematurely)
+                if (phase === 'GAMEOVER' || winner) {
+                    set({ winnerId: winner ? winner.id : null });
+                }
+
                 if (phase === 'INPUT' && players.length >= 2) {
                     const allHaveWords = players.every(p => p.displayWord.length > 0);
                     if (allHaveWords && supabase) {
@@ -550,13 +557,29 @@ export const useGameStore = create<GameState>((set, get) => ({
                 .single();
 
             if (data) {
-                set({
-                    phase: data.phase as Phase,
-                    theme: data.theme,
-                    currentPlayerIndex: data.current_player_index,
-                    attackCount: data.attack_count,
-                    attackedKanas: new Set(data.attacked_kanas || []),
-                });
+                const currentPhase = get().phase;
+                const newPhase = data.phase as Phase;
+
+                // If transitioning back to LOBBY (restart), reset local state
+                if (currentPhase === 'GAMEOVER' && newPhase === 'LOBBY') {
+                    set({
+                        phase: newPhase,
+                        theme: data.theme,
+                        logs: [],
+                        winnerId: null,
+                        currentPlayerIndex: 0,
+                        attackCount: 0,
+                        attackedKanas: new Set(),
+                    });
+                } else {
+                    set({
+                        phase: newPhase,
+                        theme: data.theme,
+                        currentPlayerIndex: data.current_player_index,
+                        attackCount: data.attack_count,
+                        attackedKanas: new Set(data.attacked_kanas || []),
+                    });
+                }
             }
         };
 
@@ -578,16 +601,7 @@ export const useGameStore = create<GameState>((set, get) => ({
                 { event: '*', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` },
                 (payload) => {
                     console.log('Room update received:', payload);
-                    if (payload.eventType === 'UPDATE') {
-                        const room = payload.new as DbRoom;
-                        set({
-                            phase: room.phase as Phase,
-                            theme: room.theme,
-                            currentPlayerIndex: room.current_player_index,
-                            attackCount: room.attack_count,
-                            attackedKanas: new Set(room.attacked_kanas || []),
-                        });
-                    }
+                    fetchRoom();
                 }
             )
             .on(
