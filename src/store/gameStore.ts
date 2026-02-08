@@ -92,6 +92,10 @@ export const useGameStore = create<GameState>((set, get) => ({
             // Clean up: delete any existing player records for this player
             await supabase.from('players').delete().eq('id', myPlayerId);
 
+            // Housekeeping: delete rooms older than 24 hours
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            await supabase.from('rooms').delete().lt('created_at', yesterday);
+
             console.log('Creating room with host_id:', myPlayerId);
 
             // Generate 6-digit room ID (100000-999999)
