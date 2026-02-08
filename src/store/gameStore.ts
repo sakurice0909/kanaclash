@@ -94,19 +94,47 @@ export const useGameStore = create<GameState>((set, get) => ({
 
             console.log('Creating room with host_id:', myPlayerId);
 
-            const { data: roomData, error: roomError } = await supabase
-                .from('rooms')
-                .insert({
-                    host_id: myPlayerId,
-                    phase: 'LOBBY',
-                    theme: '',
-                })
-                .select()
-                .single();
+            // Generate 6-digit room ID (100000-999999)
+            const generateRoomId = () => {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            };
 
-            if (roomError) {
+            let roomId = generateRoomId();
+            let attempts = 0;
+            let roomData = null;
+            let roomError = null;
+
+            // Try up to 5 times in case of ID collision
+            while (attempts < 5) {
+                const result = await supabase
+                    .from('rooms')
+                    .insert({
+                        id: roomId,
+                        host_id: myPlayerId,
+                        phase: 'LOBBY',
+                        theme: '',
+                    })
+                    .select()
+                    .single();
+
+                if (!result.error) {
+                    roomData = result.data;
+                    break;
+                }
+
+                // If duplicate key error, try another ID
+                if (result.error.code === '23505') {
+                    roomId = generateRoomId();
+                    attempts++;
+                } else {
+                    roomError = result.error;
+                    break;
+                }
+            }
+
+            if (roomError || !roomData) {
                 console.error('Room creation error:', roomError);
-                throw new Error(`Room error: ${roomError.message} (${roomError.code})`);
+                throw new Error(`Room error: ${roomError?.message || 'Failed after retries'} (${roomError?.code || 'unknown'})`);
             }
 
             console.log('Room created:', roomData);

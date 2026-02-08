@@ -32,7 +32,7 @@ git init
 git add .
 git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/kanaclash.git
+git remote add origin https://github.com/sakurice0909/kanaclash.git
 git push -u origin main
 ```
 > ⚠️ `YOUR_USERNAME` を自分のGitHubユーザー名に置き換えてください
@@ -70,7 +70,7 @@ git push -u origin main
 ```sql
 -- ルームテーブル
 CREATE TABLE rooms (
-  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  id TEXT PRIMARY KEY,
   theme TEXT NOT NULL DEFAULT '',
   phase TEXT NOT NULL DEFAULT 'LOBBY',
   current_player_index INT DEFAULT 0,
