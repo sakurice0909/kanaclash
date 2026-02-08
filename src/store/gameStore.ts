@@ -301,6 +301,22 @@ export const useGameStore = create<GameState>((set, get) => ({
                 : p
         );
         set({ players: updatedPlayers });
+
+        // Immediately check if all players have words and transition to BATTLE
+        // Fetch fresh data from server to avoid race condition
+        const { data: freshPlayers } = await supabase
+            .from('players')
+            .select()
+            .eq('room_id', roomId);
+
+        if (freshPlayers && freshPlayers.length >= 2) {
+            const allHaveWords = freshPlayers.every((p: DbPlayer) =>
+                p.display_word && p.display_word.length > 0 && p.display_word[0] !== ''
+            );
+            if (allHaveWords) {
+                await supabase.from('rooms').update({ phase: 'BATTLE' }).eq('id', roomId);
+            }
+        }
     },
 
     attack: async (kana: string) => {
