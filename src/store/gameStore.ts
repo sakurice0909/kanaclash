@@ -382,6 +382,11 @@ export const useGameStore = create<GameState>((set, get) => ({
                     revealed_indices: newRevealed,
                     is_eliminated: !isAlive,
                 }).eq('id', player.id).eq('room_id', roomId);
+
+                // Update local player object for immediate win check
+                if (!isAlive) {
+                    player.isEliminated = true;
+                }
             }
         }
 
@@ -413,6 +418,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
         // Skip eliminated players
         let attempts = 0;
+        // Use updated players list (with isEliminated updated above)
         const currentPlayers = get().players;
         while (currentPlayers[nextIndex]?.isEliminated && attempts < currentPlayers.length) {
             nextIndex = (nextIndex + 1) % currentPlayers.length;
@@ -424,17 +430,19 @@ export const useGameStore = create<GameState>((set, get) => ({
         let newPhase: Phase = 'BATTLE';
         let winnerId = null;
 
-        if (activePlayers.length === 1) {
+        if (activePlayers.length <= 1) {
             newPhase = 'GAMEOVER';
-            winnerId = activePlayers[0].id;
-            newLogs.unshift({
-                id: Date.now().toString() + '-win',
-                message: `${activePlayers[0].name} の勝利！`,
-                type: 'elimination',
-            });
+            if (activePlayers.length === 1) {
+                winnerId = activePlayers[0].id;
+                newLogs.unshift({
+                    id: Date.now().toString() + '-win',
+                    message: `${activePlayers[0].name} の勝利！`,
+                    type: 'elimination',
+                });
 
-            await supabase.from('players').update({ is_winner: true })
-                .eq('id', winnerId).eq('room_id', roomId);
+                await supabase.from('players').update({ is_winner: true })
+                    .eq('id', winnerId).eq('room_id', roomId);
+            }
         }
 
         const newAttackedKanas = new Set(attackedKanas);
@@ -451,34 +459,47 @@ export const useGameStore = create<GameState>((set, get) => ({
         set({
             logs: newLogs,
             winnerId,
+            phase: newPhase, // Immediately update phase locally
         });
     },
 
-    restartGame: () => {
+    restartGame: async () => {
         const { roomId, isHost } = get();
-        if (supabase && roomId && isHost) {
-            supabase.from('rooms').update({
-                phase: 'LOBBY',
-                current_player_index: 0,
-                attack_count: 0,
-                attacked_kanas: [],
-            }).eq('id', roomId);
+        if (!supabase || !roomId || !isHost) return;
 
-            supabase.from('players').update({
-                display_word: [],
-                revealed_indices: new Array(7).fill(false),
-                is_eliminated: false,
-                is_winner: false,
-            }).eq('room_id', roomId);
-        }
+        // Reset room state
+        await supabase.from('rooms').update({
+            phase: 'LOBBY',
+            theme: '',
+            current_player_index: 0,
+            attack_count: 0,
+            attacked_kanas: [],
+        }).eq('id', roomId);
 
+        // Reset all players' game state
+        await supabase.from('players').update({
+            display_word: [],
+            revealed_indices: [false, false, false, false, false, false, false],
+            is_eliminated: false,
+            is_winner: false,
+        }).eq('room_id', roomId);
+
+        // Reset local state
         set({
             phase: 'LOBBY',
-            currentPlayerIndex: 0,
-            attackCount: 0,
+            theme: '',
             logs: [],
             winnerId: null,
+            currentPlayerIndex: 0,
+            attackCount: 0,
             attackedKanas: new Set(),
+            players: get().players.map(p => ({
+                ...p,
+                displayWord: [],
+                revealedIndices: new Array(7).fill(false),
+                isEliminated: false,
+                isWinner: false
+            }))
         });
     },
 
