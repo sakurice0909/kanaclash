@@ -557,11 +557,13 @@ export const useGameStore = create<GameState>((set, get) => ({
                 .single();
 
             if (data) {
-                const currentPhase = get().phase;
                 const newPhase = data.phase as Phase;
+                console.log('Fetch room phase:', newPhase);
 
-                // If transitioning back to LOBBY (restart), reset local state
-                if (currentPhase === 'GAMEOVER' && newPhase === 'LOBBY') {
+                // If transitioning to LOBBY (restart or initial join), reset local state
+                // Previous check (currentPhase === 'GAMEOVER') might be too strict if state updates are out of sync
+                if (newPhase === 'LOBBY') {
+                    console.log('Resetting state for LOBBY phase');
                     set({
                         phase: newPhase,
                         theme: data.theme,
@@ -570,6 +572,14 @@ export const useGameStore = create<GameState>((set, get) => ({
                         currentPlayerIndex: 0,
                         attackCount: 0,
                         attackedKanas: new Set(),
+                        // Also reset players local state to be safe
+                        players: get().players.map(p => ({
+                            ...p,
+                            displayWord: [],
+                            revealedIndices: new Array(7).fill(false),
+                            isEliminated: false,
+                            isWinner: false
+                        }))
                     });
                 } else {
                     set({
