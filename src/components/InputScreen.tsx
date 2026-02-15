@@ -50,29 +50,29 @@ export const InputScreen = () => {
     if (hasSubmitted || submitted) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
-                <div className="glass p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-2xl space-y-8 text-center backdrop-blur-xl border border-white/10">
+                <div className="washi p-8 md:p-12 rounded-2xl w-full max-w-2xl space-y-8 text-center">
                     <div className="space-y-2">
-                        <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-widest">お題</h2>
-                        <div className="text-3xl md:text-4xl font-heading font-bold text-white">
+                        <h2 className="text-sm font-bold text-kin tracking-widest font-heading">お題</h2>
+                        <div className="text-3xl md:text-4xl font-heading font-bold text-kinari text-shadow">
                             {theme}
                         </div>
                     </div>
 
                     <div className="py-8">
                         <div className="text-6xl mb-4">✅</div>
-                        <h3 className="text-2xl font-bold text-emerald-400 mb-4">単語を登録しました！</h3>
-                        <p className="text-slate-400">他のプレイヤーの入力を待っています...</p>
+                        <h3 className="text-2xl font-bold text-matcha-light mb-4 font-heading">単語を登録しました</h3>
+                        <p className="text-hai">他のプレイヤーの入力を待っています...</p>
                     </div>
 
                     {/* Progress */}
                     <div className="space-y-4">
-                        <div className="flex justify-center gap-2">
+                        <div className="flex justify-center gap-2 flex-wrap">
                             {players.map((player) => (
                                 <div
                                     key={player.id}
                                     className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${player.displayWord.length > 0
-                                            ? 'bg-emerald-600/30 border border-emerald-500/50 text-emerald-300'
-                                            : 'bg-slate-800/50 border border-slate-700/50 text-slate-500'
+                                        ? 'bg-matcha/20 border border-matcha/40 text-matcha-light'
+                                        : 'bg-sumi/30 border border-hai/20 text-hai'
                                         }`}
                                 >
                                     {player.name}
@@ -80,7 +80,7 @@ export const InputScreen = () => {
                                 </div>
                             ))}
                         </div>
-                        <p className="text-slate-500 text-sm">
+                        <p className="text-hai text-sm">
                             {submittedCount} / {players.length} 人が入力完了
                         </p>
                     </div>
@@ -91,19 +91,19 @@ export const InputScreen = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 relative z-10 w-full">
-            <div className="glass p-8 md:p-12 rounded-3xl shadow-2xl w-full max-w-2xl space-y-8 text-center backdrop-blur-xl border border-white/10">
+            <div className="washi p-8 md:p-12 rounded-2xl w-full max-w-2xl space-y-8 text-center">
                 {/* Header Section */}
                 <div className="space-y-2">
-                    <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-1">お題 (THEME)</h2>
-                    <div className="text-3xl md:text-4xl font-heading font-bold text-white drop-shadow-md">
+                    <h2 className="text-sm font-bold text-kin tracking-widest mb-1 font-heading">お題</h2>
+                    <div className="text-3xl md:text-4xl font-heading font-bold text-kinari text-shadow">
                         {theme}
                     </div>
                 </div>
 
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="space-y-8">
                     <div>
-                        <h3 className="text-2xl font-heading font-bold mb-2">あなたの単語を入力</h3>
-                        <p className="text-sm text-slate-400">
+                        <h3 className="text-2xl font-heading font-bold mb-2 text-kinari">あなたの単語を入力</h3>
+                        <p className="text-sm text-hai">
                             2〜7文字のひらがな (他の人には見えません)
                         </p>
                     </div>
@@ -119,8 +119,8 @@ export const InputScreen = () => {
                                         className={`
                                             w-10 h-14 md:w-12 md:h-16 rounded-lg flex items-center justify-center text-2xl font-bold border-2 transition-all duration-300
                                             ${char
-                                                ? 'bg-indigo-600/20 border-indigo-400 text-indigo-100 shadow-[0_0_10px_rgba(99,102,241,0.3)]'
-                                                : 'bg-slate-800/30 border-slate-700/50 text-slate-600'}
+                                                ? 'bg-kin/10 border-kin/60 text-kin-light glow-kin'
+                                                : 'bg-sumi/30 border-hai/20 text-hai/40'}
                                         `}
                                     >
                                         {char || ''}
@@ -139,7 +139,7 @@ export const InputScreen = () => {
                                     setInput(e.target.value);
                                     setError('');
                                 }}
-                                className="w-full px-6 py-5 text-center text-3xl font-bold rounded-2xl bg-slate-900/60 border border-slate-600/50 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none placeholder:text-slate-700 transition-all text-white tracking-widest shadow-inner"
+                                className="w-full px-6 py-5 text-center text-3xl font-bold rounded-xl bg-sumi/60 border border-kin/20 focus:border-kin focus:ring-4 focus:ring-kin/10 focus:outline-none placeholder:text-hai/30 transition-all text-kinari tracking-widest shadow-inner"
                                 placeholder="ひらがな"
                                 autoFocus
                                 onKeyDown={(e) => {
@@ -152,7 +152,7 @@ export const InputScreen = () => {
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl animate-pulse">
+                        <div className="bg-shu/10 border border-shu/20 text-shu-light px-4 py-3 rounded-xl animate-pulse">
                             ⚠️ {error}
                         </div>
                     )}
@@ -160,13 +160,13 @@ export const InputScreen = () => {
                     <button
                         onClick={handleConfirm}
                         disabled={!input}
-                        className="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl font-bold text-xl text-white shadow-lg shadow-emerald-900/20 transition-all active:scale-95 border-t border-white/20"
+                        className="w-full py-5 bg-gradient-to-r from-shu to-shu-dark hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-heading font-bold text-xl text-kinari shadow-lg transition-all active:scale-95 border-b-4 border-shu-dark/50"
                     >
                         決定
                     </button>
 
                     {/* Other players progress */}
-                    <div className="text-slate-500 text-sm">
+                    <div className="text-hai text-sm">
                         {submittedCount} / {players.length} 人が入力完了
                     </div>
                 </div>

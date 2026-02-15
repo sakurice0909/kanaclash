@@ -7,16 +7,31 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Zen Maru Gothic"', 'sans-serif'],
-        heading: ['"Mochiy Pop One"', 'sans-serif'],
+        sans: ['"Noto Sans JP"', 'sans-serif'],
+        heading: ['"Shippori Mincho B1"', 'serif'],
       },
       colors: {
-        primary: {
-          400: '#818cf8', // Indigo 400
-          500: '#6366f1', // Indigo 500
-          600: '#4f46e5', // Indigo 600
-        }
-      }
+        ai: '#1a1a2e',
+        kon: '#16213e',
+        shu: {
+          DEFAULT: '#c73e3a',
+          dark: '#a63030',
+          light: '#e05550',
+        },
+        kin: {
+          DEFAULT: '#c9a84c',
+          light: '#e8d48b',
+          dark: '#a68a3a',
+        },
+        kinari: '#f5f0e1',
+        sumi: '#2d2d3d',
+        hai: '#8b8b9e',
+        beni: '#b4436c',
+        matcha: {
+          DEFAULT: '#6b8e5a',
+          light: '#8fb87a',
+        },
+      },
     },
   },
   plugins: [],

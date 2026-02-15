@@ -12,12 +12,13 @@ function App() {
   const showLobby = !roomId || phase === 'LOBBY';
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-900 text-white font-sans selection:bg-indigo-500/30">
-      {/* Animated Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/20 rounded-full blur-[100px] animate-float opacity-70"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[100px] animate-float-delayed opacity-70"></div>
-        <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] bg-cyan-600/10 rounded-full blur-[80px] animate-pulse opacity-50"></div>
+    <div className="relative min-h-screen overflow-hidden bg-ai text-kinari font-sans selection:bg-shu/30">
+      {/* 和柄背景 */}
+      <div className="fixed inset-0 z-0 asanoha-pattern">
+        {/* 墨のにじみ風グラデーション */}
+        <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-kon/40 rounded-full blur-[120px] animate-float opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-shu/10 rounded-full blur-[120px] animate-float-delayed opacity-50"></div>
+        <div className="absolute top-[30%] right-[10%] w-[30%] h-[30%] bg-kin/5 rounded-full blur-[100px] animate-sway opacity-40"></div>
       </div>
 
       {/* Content */}

@@ -13,19 +13,19 @@ const KANA_COLS = [
 
 const PlayerBoard = ({ player, isCurrent, isMe }: { player: Player; isCurrent: boolean; isMe: boolean }) => {
     return (
-        <div className={`p-6 rounded-2xl transition-all duration-500 relative overflow-hidden ${isCurrent
-            ? 'bg-indigo-900/40 border-2 border-indigo-400/50 shadow-[0_0_30px_rgba(99,102,241,0.2)] transform scale-[1.02]'
-            : 'bg-slate-900/30 border border-white/5'}`}>
+        <div className={`p-6 rounded-xl transition-all duration-500 relative overflow-hidden ${isCurrent
+            ? 'bg-shu/10 border-2 border-shu/40 glow-shu transform scale-[1.02]'
+            : 'bg-sumi/30 border border-kin/5'}`}>
 
-            {isCurrent && <div className="absolute inset-0 bg-indigo-500/10 animate-pulse pointer-events-none"></div>}
+            {isCurrent && <div className="absolute inset-0 bg-shu/5 animate-pulse pointer-events-none"></div>}
 
             <div className="flex justify-between items-center mb-4 relative z-10">
-                <span className={`font-heading font-bold text-xl tracking-wide flex items-center gap-2 ${isCurrent ? 'text-indigo-200 drop-shadow-sm' : 'text-slate-400'}`}>
+                <span className={`font-heading font-bold text-xl tracking-wide flex items-center gap-2 ${isCurrent ? 'text-kinari text-shadow' : 'text-hai'}`}>
                     {player.name}
-                    {isMe && <span className="text-xs bg-cyan-600 px-2 py-0.5 rounded-full text-white">あなた</span>}
-                    {isCurrent && <span className="text-xs bg-indigo-500 px-2 py-0.5 rounded-full text-white animate-bounce">TURN</span>}
+                    {isMe && <span className="text-xs bg-shu/80 px-2 py-0.5 rounded-full text-kinari">あなた</span>}
+                    {isCurrent && <span className="text-xs bg-kin/80 px-2 py-0.5 rounded-full text-ai font-bold animate-bounce">手番</span>}
                 </span>
-                {player.isEliminated && <span className="text-white font-bold tracking-wider text-sm bg-rose-500 px-3 py-1 rounded-full shadow-lg shadow-rose-900/50">脱落</span>}
+                {player.isEliminated && <span className="text-kinari font-bold tracking-wider text-sm bg-beni px-3 py-1 rounded-full shadow-lg">脱落</span>}
             </div>
             <div className="flex gap-2 justify-center flex-wrap">
                 {player.displayWord.map((char, index) => {
@@ -33,10 +33,10 @@ const PlayerBoard = ({ player, isCurrent, isMe }: { player: Player; isCurrent: b
                     return (
                         <div
                             key={index}
-                            className={`w-10 h-12 md:w-12 md:h-14 flex items-center justify-center rounded-xl font-bold text-xl shadow-lg transition-all duration-500 relative
+                            className={`w-10 h-12 md:w-12 md:h-14 flex items-center justify-center rounded-lg font-bold text-xl shadow-lg transition-all duration-500 relative
                             ${isRevealed
-                                    ? 'bg-gradient-to-br from-indigo-100 to-indigo-300 text-indigo-900 shadow-[0_4px_10px_rgba(99,102,241,0.4)] transform scale-100 rotate-0'
-                                    : 'bg-slate-800/50 text-slate-600 border border-slate-700/50 inner-shadow transform'
+                                    ? 'bg-gradient-to-br from-kin-light to-kin text-ai glow-kin transform scale-100'
+                                    : 'bg-sumi/50 text-hai border border-hai/20'
                                 }`}
                         >
                             {isRevealed ? char : '?'}
@@ -89,11 +89,11 @@ export const BattleScreen = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row h-screen overflow-hidden text-slate-200 relative z-10">
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden text-kinari relative z-10">
             {/* Left: Board & Logs */}
-            <div className="flex-1 p-4 md:p-8 overflow-y-auto space-y-6 pb-40 md:pb-8 scrollbar-thin scrollbar-thumb-indigo-500/30 scrollbar-track-transparent">
+            <div className="flex-1 p-4 md:p-8 overflow-y-auto space-y-6 pb-40 md:pb-8 scrollbar-thin scrollbar-thumb-kin/30 scrollbar-track-transparent">
                 <div>
-                    <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h2 className="text-sm font-bold text-kin tracking-widest mb-4 flex items-center gap-2 font-heading">
                         <span className="text-lg">👥</span> 参加者
                     </h2>
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -109,17 +109,17 @@ export const BattleScreen = () => {
                 </div>
 
                 <div className="flex-1 min-h-[200px]">
-                    <h2 className="text-sm font-bold text-indigo-300 uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <h2 className="text-sm font-bold text-kin tracking-widest mb-2 flex items-center gap-2 font-heading">
                         <span className="text-lg">📜</span> バトルログ
                     </h2>
-                    <div className="glass rounded-2xl p-4 h-64 overflow-y-auto space-y-3 font-sans text-sm border-0 shadow-inner scrollbar-thin scrollbar-thumb-slate-600/50">
-                        {logs.length === 0 && <div className="text-slate-500 text-center py-10">バトル開始！</div>}
+                    <div className="washi rounded-xl p-4 h-64 overflow-y-auto space-y-3 font-sans text-sm scrollbar-thin scrollbar-thumb-hai/30">
+                        {logs.length === 0 && <div className="text-hai text-center py-10 font-heading">バトル開始！</div>}
                         {logs.map((log) => (
-                            <div key={log.id} className={`flex items-start gap-3 px-3 py-2 rounded-xl transition-all animate-in slide-in-from-left-2 duration-300
-                                ${log.type === 'attack' ? 'bg-cyan-950/20 border border-cyan-500/10' : ''}
-                                ${log.type === 'damage' ? 'bg-rose-950/30 border border-rose-500/20' : ''}
-                                ${log.type === 'elimination' ? 'bg-amber-950/40 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]' : ''}
-                                ${log.type === 'info' ? 'text-slate-400' : ''}
+                            <div key={log.id} className={`flex items-start gap-3 px-3 py-2 rounded-xl transition-all
+                                ${log.type === 'attack' ? 'bg-kon/40 border border-kin/10' : ''}
+                                ${log.type === 'damage' ? 'bg-shu/10 border border-shu/20' : ''}
+                                ${log.type === 'elimination' ? 'bg-beni/10 border border-beni/30 glow-shu' : ''}
+                                ${log.type === 'info' ? 'text-hai' : ''}
                             `}>
                                 <span className="text-lg mt-0.5">
                                     {log.type === 'attack' && '⚔️'}
@@ -137,23 +137,23 @@ export const BattleScreen = () => {
             </div>
 
             {/* Right: Controls (Keyboard) */}
-            <div className="w-full md:w-[450px] glass-strong p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.3)] flex flex-col border-t md:border-t-0 md:border-l border-white/10 z-20 backdrop-blur-2xl">
+            <div className="w-full md:w-[450px] washi-strong p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.3)] flex flex-col border-t md:border-t-0 md:border-l border-kin/10 z-20">
                 <div className="mb-6 text-center">
-                    <h3 className="text-indigo-300 text-xs font-bold uppercase tracking-widest mb-2">現在のターン</h3>
-                    <div className={`text-4xl font-heading font-black my-3 drop-shadow-sm ${isMyTurn
-                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-emerald-300 animate-pulse'
-                            : 'text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-cyan-300 to-indigo-300'
+                    <h3 className="text-kin text-xs font-bold tracking-widest mb-2 font-heading">現在のターン</h3>
+                    <div className={`text-4xl font-heading font-bold my-3 ${isMyTurn
+                        ? 'text-shu text-shadow-lg animate-pulse'
+                        : 'text-kin text-shadow'
                         }`}>
                         {isMyTurn ? 'あなたの番！' : currentPlayer?.name}
                     </div>
-                    <div className="inline-flex items-center gap-2 bg-indigo-950/40 border border-indigo-500/30 rounded-full py-1.5 px-5 shadow-inner">
-                        <span className="text-indigo-200 text-sm">アクション</span>
-                        <span className="font-heading font-bold text-xl text-white">{attackCount + 1}</span>
-                        <span className="text-indigo-200 text-xs">/ 2 (ヒット時)</span>
+                    <div className="inline-flex items-center gap-2 bg-sumi/40 border border-kin/20 rounded-full py-1.5 px-5 shadow-inner">
+                        <span className="text-kin-light text-sm">アクション</span>
+                        <span className="font-heading font-bold text-xl text-kinari">{attackCount + 1}</span>
+                        <span className="text-hai text-xs">/ 2 (ヒット時)</span>
                     </div>
 
                     {!isMyTurn && (
-                        <p className="text-slate-400 text-sm mt-4">
+                        <p className="text-hai text-sm mt-4">
                             {currentPlayer?.name} の攻撃を待っています...
                         </p>
                     )}
@@ -173,16 +173,16 @@ export const BattleScreen = () => {
                                     className={`
                                         aspect-square flex items-center justify-center rounded-lg font-bold text-base md:text-lg transition-all duration-200 relative overflow-hidden group
                                         ${status === 'hit'
-                                            ? 'bg-emerald-600/80 text-white shadow-[0_0_10px_rgba(16,185,129,0.5)] scale-95 border-none cursor-not-allowed'
+                                            ? 'bg-gradient-to-br from-kin-light to-kin text-ai glow-kin scale-95 cursor-not-allowed font-black'
                                             : status === 'miss'
-                                                ? 'bg-slate-800/30 text-slate-600 scale-95 border border-slate-700/30 cursor-not-allowed line-through decoration-2'
+                                                ? 'bg-sumi/20 text-hai/30 scale-95 border border-hai/10 cursor-not-allowed line-through decoration-2'
                                                 : !isMyTurn
-                                                    ? 'bg-slate-700/40 text-slate-500 border border-white/5 cursor-not-allowed'
-                                                    : 'bg-slate-700/40 hover:bg-indigo-600/60 text-slate-300 hover:text-white border border-white/5 hover:border-indigo-400/50 active:scale-90'}
+                                                    ? 'bg-sumi/40 text-hai/60 border border-kin/5 cursor-not-allowed'
+                                                    : 'bg-sumi/40 hover:bg-shu/30 text-kinari hover:text-kinari border border-kin/10 hover:border-shu/50 active:scale-90 hover:glow-shu'}
                                     `}
                                 >
                                     <span className="relative z-10">{char}</span>
-                                    {status === 'neutral' && isMyTurn && <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
+                                    {status === 'neutral' && isMyTurn && <div className="absolute inset-0 bg-gradient-to-br from-kin/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>}
                                 </button>
                             );
                         })}
