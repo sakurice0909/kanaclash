@@ -13,27 +13,27 @@ const KANA_COLS = [
 
 const PlayerBoard = ({ player, isCurrent, isMe }: { player: Player; isCurrent: boolean; isMe: boolean }) => {
     return (
-        <div className={`p-6 rounded-xl transition-all duration-500 relative overflow-hidden ${isCurrent
+        <div className={`p-3 md:p-6 rounded-xl transition-all duration-500 relative overflow-hidden ${isCurrent
             ? 'bg-shu/10 border-2 border-shu/40 glow-shu transform scale-[1.02]'
             : 'bg-sumi/30 border border-kin/5'}`}>
 
             {isCurrent && <div className="absolute inset-0 bg-shu/5 animate-pulse pointer-events-none"></div>}
 
-            <div className="flex justify-between items-center mb-4 relative z-10">
-                <span className={`font-heading font-bold text-xl tracking-wide flex items-center gap-2 ${isCurrent ? 'text-kinari text-shadow' : 'text-hai'}`}>
+            <div className="flex justify-between items-center mb-2 md:mb-4 relative z-10">
+                <span className={`font-heading font-bold text-base md:text-xl tracking-wide flex items-center gap-1 md:gap-2 ${isCurrent ? 'text-kinari text-shadow' : 'text-hai'}`}>
                     {player.name}
                     {isMe && <span className="text-xs bg-shu/80 px-2 py-0.5 rounded-full text-kinari">あなた</span>}
                     {isCurrent && <span className="text-xs bg-kin/80 px-2 py-0.5 rounded-full text-ai font-bold animate-bounce">手番</span>}
                 </span>
                 {player.isEliminated && <span className="text-kinari font-bold tracking-wider text-sm bg-beni px-3 py-1 rounded-full shadow-lg">脱落</span>}
             </div>
-            <div className="flex gap-2 justify-center flex-wrap">
+            <div className="flex gap-1 md:gap-2 justify-center flex-nowrap">
                 {player.displayWord.map((char, index) => {
                     const isRevealed = player.revealedIndices[index];
                     return (
                         <div
                             key={index}
-                            className={`w-10 h-12 md:w-12 md:h-14 flex items-center justify-center rounded-lg font-bold text-xl shadow-lg transition-all duration-500 relative
+                            className={`w-7 h-9 md:w-12 md:h-14 flex items-center justify-center rounded-lg font-bold text-sm md:text-xl shadow-lg transition-all duration-500 relative
                             ${isRevealed
                                     ? 'bg-gradient-to-br from-kin-light to-kin text-ai glow-kin transform scale-100'
                                     : 'bg-sumi/50 text-hai border border-hai/20'
@@ -108,11 +108,12 @@ export const BattleScreen = () => {
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-[200px]">
-                    <h2 className="text-sm font-bold text-kin tracking-widest mb-2 flex items-center gap-2 font-heading">
+                <details className="flex-1">
+                    <summary className="text-sm font-bold text-kin tracking-widest mb-2 flex items-center gap-2 font-heading cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
                         <span className="text-lg">📜</span> バトルログ
-                    </h2>
-                    <div className="washi rounded-xl p-4 h-64 overflow-y-auto space-y-3 font-sans text-sm scrollbar-thin scrollbar-thumb-hai/30">
+                        <span className="text-xs text-hai ml-auto">▶ タップで展開</span>
+                    </summary>
+                    <div className="washi rounded-xl p-4 max-h-64 overflow-y-auto space-y-3 font-sans text-sm scrollbar-thin scrollbar-thumb-hai/30 mt-2">
                         {logs.length === 0 && <div className="text-hai text-center py-10 font-heading">バトル開始！</div>}
                         {logs.map((log) => (
                             <div key={log.id} className={`flex items-start gap-3 px-3 py-2 rounded-xl transition-all
@@ -133,7 +134,7 @@ export const BattleScreen = () => {
                             </div>
                         ))}
                     </div>
-                </div>
+                </details>
             </div>
 
             {/* Right: Controls (Keyboard) */}
