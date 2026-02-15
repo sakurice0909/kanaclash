@@ -139,22 +139,23 @@ export const BattleScreen = () => {
 
             {/* Right: Controls (Keyboard) */}
             <div className="w-full md:w-[450px] washi-strong p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.3)] flex flex-col border-t md:border-t-0 md:border-l border-kin/10 z-20">
-                <div className="mb-6 text-center">
-                    <h3 className="text-kin text-xs font-bold tracking-widest mb-2 font-heading">現在のターン</h3>
-                    <div className={`text-4xl font-heading font-bold my-3 ${isMyTurn
-                        ? 'text-shu text-shadow-lg animate-pulse'
-                        : 'text-kin text-shadow'
-                        }`}>
-                        {isMyTurn ? 'あなたの番！' : currentPlayer?.name}
-                    </div>
-                    <div className="inline-flex items-center gap-2 bg-sumi/40 border border-kin/20 rounded-full py-1.5 px-5 shadow-inner">
-                        <span className="text-kin-light text-sm">アクション</span>
-                        <span className="font-heading font-bold text-xl text-kinari">{attackCount + 1}</span>
-                        <span className="text-hai text-xs">/ 2 (ヒット時)</span>
+                <div className="mb-3 md:mb-6 text-center">
+                    <div className="flex items-center justify-center gap-2 md:gap-3 flex-wrap">
+                        <span className={`text-lg md:text-2xl font-heading font-bold ${isMyTurn
+                            ? 'text-shu text-shadow-lg animate-pulse'
+                            : 'text-kin text-shadow'
+                            }`}>
+                            {isMyTurn ? 'あなたの番！' : currentPlayer?.name}
+                        </span>
+                        <div className="inline-flex items-center gap-1.5 bg-sumi/40 border border-kin/20 rounded-full py-1 px-3 md:py-1.5 md:px-5 shadow-inner">
+                            <span className="text-kin-light text-xs md:text-sm">アクション</span>
+                            <span className="font-heading font-bold text-base md:text-xl text-kinari">{attackCount + 1}</span>
+                            <span className="text-hai text-[10px] md:text-xs">/ 2</span>
+                        </div>
                     </div>
 
                     {!isMyTurn && (
-                        <p className="text-hai text-sm mt-4">
+                        <p className="text-hai text-xs md:text-sm mt-2">
                             {currentPlayer?.name} の攻撃を待っています...
                         </p>
                     )}
